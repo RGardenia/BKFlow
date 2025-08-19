@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 TencentBlueKing is pleased to support the open source community by making
 蓝鲸流程引擎服务 (BlueKing Flow Engine Service) available.
@@ -17,6 +16,8 @@ We undertake not to change the open source license (MIT license) applicable
 
 to the current version of the project delivered to anyone in the future.
 """
+from datetime import timedelta
+
 from blueapps.contrib.celery_tools.periodic import periodic_task
 from celery.schedules import crontab
 from django.conf import settings
@@ -29,4 +30,7 @@ from bkflow.permission.models import Token
 def delete_expired_token():
     # 假设token的过期时间为一小时，一天有2000个用户操作了100个流程，会生成大概200000个token
     # 此时的批量删除的数量级大概是可以接受的
-    Token.objects.filter(expired_time__lt=timezone.now() - settings.TOKEN_RETENTION_TIME).delete()
+    retention_period = timedelta(seconds=settings.TOKEN_RETENTION_TIME)
+    cutoff_time = timezone.now() - retention_period
+
+    Token.objects.filter(expired_time__lt=cutoff_time).delete()

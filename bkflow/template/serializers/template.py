@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 TencentBlueKing is pleased to support the open source community by making
 蓝鲸流程引擎服务 (BlueKing Flow Engine Service) available.
@@ -22,7 +21,7 @@ import logging
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from pipeline.validators import validate_pipeline_tree
 from rest_framework import serializers
 from webhook.signals import event_broadcast_signal
@@ -102,7 +101,7 @@ class TemplateSerializer(serializers.ModelSerializer):
         pipeline_tree = validated_data.pop("pipeline_tree", None)
         snapshot = TemplateSnapshot.create_snapshot(pipeline_tree)
         validated_data["snapshot_id"] = snapshot.id
-        template = super(TemplateSerializer, self).create(validated_data)
+        template = super().create(validated_data)
 
         snapshot.template_id = template.id
         snapshot.save(update_fields=["template_id"])
@@ -130,7 +129,7 @@ class TemplateSerializer(serializers.ModelSerializer):
             logger.exception("TemplateSerializer update error, err = {}".format(e))
             raise serializers.ValidationError(detail={"msg": ("更新失败,{}".format(e))})
         instance.update_snapshot(pipeline_tree)
-        instance = super(TemplateSerializer, self).update(instance, validated_data)
+        instance = super().update(instance, validated_data)
 
         send_callback(instance.space_id, "template", instance.build_callback_data(operate_type="update"))
         event_broadcast_signal.send(
@@ -156,7 +155,7 @@ class TemplateSerializer(serializers.ModelSerializer):
         return permissions
 
     def to_representation(self, instance):
-        data = super(TemplateSerializer, self).to_representation(instance)
+        data = super().to_representation(instance)
         data["auth"] = self.get_current_user_auth(instance)
         return data
 
@@ -177,7 +176,7 @@ class TemplateOperationRecordSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def to_representation(self, instance):
-        data = super(TemplateOperationRecordSerializer, self).to_representation(instance)
+        data = super().to_representation(instance)
         data["operate_type_name"] = TemplateOperationType[instance.operate_type].value if instance.operate_type else ""
         data["operate_source_name"] = (
             TemplateOperationSource[instance.operate_source].value if instance.operate_source else ""

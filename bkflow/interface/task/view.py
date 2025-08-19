@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 TencentBlueKing is pleased to support the open source community by making
 蓝鲸流程引擎服务 (BlueKing Flow Engine Service) available.
@@ -20,7 +19,7 @@ to the current version of the project delivered to anyone in the future.
 import logging
 
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -57,9 +56,7 @@ class TaskInterfaceAdminViewSet(GenericViewSet):
         result = client.task_list(data={**request.query_params, "space_id": space_id})
         return Response(result)
 
-    @swagger_auto_schema(
-        methods=["post"], operation_description="任务状态查询", request_body=GetTasksStatesBodySerializer
-    )
+    @swagger_auto_schema(methods=["post"], operation_description="任务状态查询", request_body=GetTasksStatesBodySerializer)
     @action(methods=["POST"], detail=False, url_path="get_tasks_states")
     def get_tasks_states(self, request, *args, **kwargs):
         ser = GetTasksStatesBodySerializer(data=request.data)
@@ -90,9 +87,7 @@ class TaskInterfaceAdminViewSet(GenericViewSet):
 class TaskInterfaceSystemSuperuserViewSet(GenericViewSet):
     permission_classes = [AdminPermission]
 
-    @swagger_auto_schema(
-        methods=["post"], operation_description="触发引擎管理操作", request_body=TaskEngineAdminSerializer
-    )
+    @swagger_auto_schema(methods=["post"], operation_description="触发引擎管理操作", request_body=TaskEngineAdminSerializer)
     @action(methods=["POST"], detail=False, url_path="trigger_engine_admin_action")
     def trigger_engine_admin_action(self, request, *args, **kwargs):
         ser = TaskEngineAdminSerializer(data=request.data)
